@@ -1,0 +1,37 @@
+
+name: Create torrent
+on:
+  push:
+    branches:
+      - master
+
+env:
+  name: "jack ryan s1"
+  comment: "jack ryan s1"
+  url: "https://noisy-mouse-f298.nojeye97652165.workers.dev/b62540cd6f1e515a8b11c97f4f40b39a6170d459ec431f1bd7dc4ccff093d4852bb0b790e4953a48dab0985bc38128d1::05937c242b3e4e8bbe3a760c15849309/1395913125/Jack.Ryan.S01.720p.Hindi.Vegamovies.NL.zip"
+  file_name: "jack ryan s1"
+  piece_size: 21 # Check the README.md for recommended piece size
+  name: "Android Studio and SDK Tools"
+  comment: "Android Studio for Windows"
+  url: "https://redirector.gvt1.com/edgedl/android/studio/install/4.1.2.0/android-studio-ide-201.7042882-windows.exe"
+  file_name: "android-studio-ide-201.7042882-windows.exe"
+  piece_size: 19 # Check the README.md for recommended piece size
+
+jobs:
+  create:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install mktorrent
+        run: sudo apt-get install mktorrent
+        
+      - name: Download file
+        run: wget -nv -O "$file_name" "$url"
+        
+      - name: Create torrent using mktorrent
+        run: mktorrent -c "$comment" -l $piece_size -o "${name}.torrent" -w "$url" "$file_name"
+        
+      - name: Upload torrent file
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.name }}
+          path: ${{ env.name }}.torrent
